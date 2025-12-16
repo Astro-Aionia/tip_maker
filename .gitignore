@@ -1,0 +1,97 @@
+# STM32 项目通用 .gitignore
+# 说明：排除 build 输出、临时/中间文件、IDE 配置等不需要跟踪的文件
+
+# 常见构建输出
+/build/
+bin/
+out/
+Debug/
+Release/
+cmake-build-*/
+build*/
+
+# 编译产物、链接文件
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.elf
+*.axf
+*.map
+*.hex
+*.bin
+*.lst
+*.srec
+*.dfu
+*.d
+
+# 编译时产生的依赖和缓存
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+Makefile.user
+*.tmp
+*.temp
+
+# 日志、临时文件、备份
+*.log
+*.bak
+*.swp
+*~
+*.cache
+
+# 常见 IDE / 编辑器 配置（不要跟踪个人设置）
+.vscode/
+*.code-workspace
+.vs/
+.idea/
+.settings/
+.metadata/
+.project
+.cproject
+*.launch
+
+# Keil / ARM / IAR / STM32CubeIDE 等工程文件（按需保留项目源）
+*.uvproj*
+*.uvopt*
+*.ewp
+*.eww
+*.ewd
+*.ewt
+
+# STM32CubeMX 用户本地设置（.ioc 通常应纳入版本控制，.ioc.user 可忽略）
+*.ioc.user
+
+# PlatformIO
+.pio/
+.pioenvs/
+
+# Python 缓存（若项目包含 Python 脚本）
+__pycache__/
+*.pyc
+
+# 文档/工具生成目录
+html/
+latex/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 标签/索引文件
+tags
+TAGS
+cscope.*
+
+# 私有密钥/证书（避免误提交）
+*.pem
+*.key
+
+# STM32 for Vscode 插件生成文件
+.stm32env
+STM32Make.make

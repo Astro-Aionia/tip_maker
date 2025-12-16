@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 static SequenceState_t seq_state = SEQ_IDLE;
-static uint32_t seq_timer = 0;
+// static uint32_t seq_timer = 0;
 static bool seq_running = false;
 
 void SequenceController_Init(void) {
@@ -17,7 +17,7 @@ void SequenceController_Start(void) {
     if (!seq_running) {
         seq_state = SEQ_SETUP_SWITCHES;
         seq_running = true;
-        seq_timer = HAL_GetTick();
+        // seq_timer = HAL_GetTick();
     }
 }
 
@@ -28,7 +28,7 @@ bool SequenceController_IsRunning(void) {
 void SequenceController_Process(void) {
     if (!seq_running) return;
     
-    uint32_t current_time = HAL_GetTick();
+    // uint32_t current_time = HAL_GetTick();
     
     switch (seq_state) {
         case SEQ_SETUP_SWITCHES:
@@ -42,19 +42,16 @@ void SequenceController_Process(void) {
             StepperMotor_UpdateSwitches(false, true);
             
             seq_state = SEQ_START_MOVING;
-            seq_timer = current_time;
+            // seq_timer = current_time;
             break;
             
         case SEQ_START_MOVING:
-            // 等待开关稳定（如果需要）
-            if (current_time - seq_timer > 100) {
-                // 以可调频率启动CW方向连续运动
-                StepperMotor_SetFrequency(g_system_state.freq);
-                StepperMotor_Move(MOTOR_DIR_CW, 0xFFFF); // 最大步数，表示连续运动
-                
-                seq_state = SEQ_MONITOR_CURRENT;
-                seq_timer = current_time;
-            }
+            // 以可调频率启动CW方向连续运动
+            StepperMotor_SetFrequency(g_system_state.freq);
+
+            // 启动连续运动
+            StepperMotor_CountinueMove(MOTOR_DIR_CW);
+            seq_state = SEQ_MONITOR_CURRENT;
             break;
             
         case SEQ_MONITOR_CURRENT:
@@ -69,7 +66,7 @@ void SequenceController_Process(void) {
             
             if (all_below) {
                 seq_state = SEQ_ADJUST_SWITCHES;
-                seq_timer = current_time;
+                // seq_timer = current_time;
             }
             break;
             
@@ -83,7 +80,7 @@ void SequenceController_Process(void) {
             StepperMotor_UpdateSwitches(g_system_state.switch_holdoff, false);
             
             seq_state = SEQ_FINAL_MOVE;
-            seq_timer = current_time;
+            // seq_timer = current_time;
             break;
             
         case SEQ_FINAL_MOVE:
@@ -91,7 +88,7 @@ void SequenceController_Process(void) {
             StepperMotor_Stop();
             
             // 等待停止
-            if (current_time - seq_timer > 50) {
+            if (StepperMotor_IsMoving() == false) {
                 StepperMotor_SetFrequency(g_system_state.origin_freq);
                 StepperMotor_Move(MOTOR_DIR_CW, 2000);
                 

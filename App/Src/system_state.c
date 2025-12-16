@@ -7,6 +7,21 @@
 
 SystemState_t g_system_state;
 
+// 脉冲计数完成回调函数
+static void MotorPulseCompleteCallback(void) {
+    // 当脉冲计数完成时更新系统状态
+    g_system_state.current_steps = g_system_state.target_steps;
+    g_system_state.motor_moving = false;
+    
+    // 如果启用了调试输出，可以在这里添加
+    if (g_system_state.debug_enabled) {
+        char msg[64];
+        snprintf(msg, sizeof(msg), "Motor move completed: %d steps\r\n", 
+                g_system_state.current_steps);
+        CDC_Transmit_FS((uint8_t*)msg, strlen(msg));
+    }
+}
+
 void SystemState_Init(void) {
     // 初始化固有参数
     g_system_state.origin_freq = 1000;
@@ -36,6 +51,9 @@ void SystemState_Init(void) {
     // 初始化调试模式
     g_system_state.debug_level = 0;
     g_system_state.debug_enabled = false;
+
+    // 设置脉冲完成回调
+    StepperMotor_SetPulseCompleteCallback(MotorPulseCompleteCallback);
     
     // 初始化运动状态
     g_system_state.motor_moving = false;

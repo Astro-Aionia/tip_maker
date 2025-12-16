@@ -122,7 +122,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     // 读取并更新电流值
-    float current;
+    int16_t current;
     if (INA236_ReadCurrent(&current)) {
         SystemState_UpdateCurrent(current);
     }

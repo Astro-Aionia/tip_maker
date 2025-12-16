@@ -22,7 +22,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "system_state.h"
+#include "stepper_motor.h"
+#include "ina236.h"
+#include "command_parser.h"
+#include "sequence_controller.h"
+#include "eeprom_emulation.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,7 +51,7 @@ I2C_HandleTypeDef hi2c1;
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
-
+SystemState_t g_system_state;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,7 +101,17 @@ int main(void)
   MX_TIM1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-
+  // 初始化EEPROM模拟
+  EE_Init();
+    
+  // 初始化系统状态
+  SystemState_Init();
+    
+  // 初始化模块
+  StepperMotor_Init();
+  INA236_Init();
+  CommandParser_Init();
+  SequenceController_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -106,6 +121,34 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    // 读取并更新电流值
+    float current;
+    if (INA236_ReadCurrent(&current)) {
+        SystemState_UpdateCurrent(current);
+    }
+    
+    // 更新输入状态
+    SystemState_UpdateInputs();
+    
+    // 处理电机控制
+    StepperMotor_Process();
+    
+    // 处理序列控制器
+    SequenceController_Process();
+    
+    // 处理调试输出
+    static uint32_t last_debug_time = 0;
+    uint32_t current_time = HAL_GetTick();
+    
+    if (g_system_state.debug_enabled && 
+        (current_time - last_debug_time >= 1000)) {
+        last_debug_time = current_time;
+        
+        char debug_cmd[32];
+        snprintf(debug_cmd, sizeof(debug_cmd), "STATUS %d", 
+                g_system_state.debug_level);
+        CommandParser_Process(debug_cmd);
+    }
   }
   /* USER CODE END 3 */
 }

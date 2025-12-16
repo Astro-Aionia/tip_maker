@@ -11,7 +11,7 @@ typedef struct {
     
     // 用户可调参数
     uint16_t freq;
-    float threshold;
+    int16_t threshold;
     
     // 开关状态
     bool switch_current;
@@ -23,7 +23,7 @@ typedef struct {
     uint16_t round_count;
     
     // 电流缓冲区
-    float current_buffer[8];
+    int16_t current_buffer[8];
     uint8_t buffer_index;
     
     // 调试模式

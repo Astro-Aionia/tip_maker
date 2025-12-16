@@ -43,18 +43,18 @@ void CommandParser_Process(const char *cmd) {
             bool success = true;
             
             if (strcmp(key, "FREQ") == 0) {
-                int freq = atoi(value);
+                uint16_t freq = atoi(value);
                 if (freq >= 0 && freq <= 1000) {
                     g_system_state.freq = freq;
-                    SystemState_SaveToEEPROM();
+                    // SystemState_SaveToEEPROM();
                 } else {
                     success = false;
                 }
             } 
             else if (strcmp(key, "THRES") == 0) {
-                float thres = atof(value);
+                int16_t thres = atoi(value);
                 g_system_state.threshold = thres;
-                SystemState_SaveToEEPROM();
+                // SystemState_SaveToEEPROM();
             }
             else if (strcmp(key, "CURRENT") == 0) {
                 if (strcmp(value, "ON") == 0) {
@@ -117,7 +117,7 @@ void CommandParser_Process(const char *cmd) {
             snprintf(value_str, sizeof(value_str), "%d", g_system_state.freq);
         }
         else if (strcmp(key, "THRES") == 0) {
-            snprintf(value_str, sizeof(value_str), "%.6f", g_system_state.threshold);
+            snprintf(value_str, sizeof(value_str), "%d", g_system_state.threshold);
         }
         else if (strcmp(key, "CURRENT") == 0) {
             snprintf(value_str, sizeof(value_str), "%s", 

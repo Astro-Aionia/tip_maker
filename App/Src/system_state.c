@@ -10,14 +10,15 @@ SystemState_t g_system_state;
 void SystemState_Init(void) {
     // 初始化固有参数
     g_system_state.origin_freq = 1000;
-    
+    g_system_state.freq = g_system_state.origin_freq;
+    g_system_state.threshold = 50;
     // 从EEPROM加载用户设置
-    SystemState_LoadFromEEPROM();
+    // SystemState_LoadFromEEPROM();
     
     // 如果EEPROM中没有值，使用默认值
-    if (g_system_state.freq > 1000) {
+    /*if (g_system_state.freq > 1000) {
         g_system_state.freq = 500; // 默认500Hz
-    }
+    }*/
     
     // 初始化开关状态
     g_system_state.switch_current = false;

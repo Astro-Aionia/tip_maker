@@ -226,12 +226,17 @@ void CommandParser_Process(const char *cmd) {
             if (level >= 3) {
                 snprintf(temp, sizeof(temp), 
                         ", \"MotorMoving\": %s, \"TargetSteps\": %d, \"CurrentSteps\": %d, "
+                        "\"CurrentDirection\": \"%c\"",
+                        g_system_state.motor_moving ? "true" : "false",
+                        g_system_state.target_steps, g_system_state.current_steps,
+                        g_system_state.current_direction
+                        /*", \"MotorMoving\": %s, \"TargetSteps\": %d, \"CurrentSteps\": %d, "
                         "\"CurrentDirection\": \"%c\", \"RoundCount\": %d, \"ZeroPoint\": %s",
                         g_system_state.motor_moving ? "true" : "false",
                         g_system_state.target_steps, g_system_state.current_steps,
                         g_system_state.current_direction,
                         g_system_state.round_count,
-                        g_system_state.zero_point ? "true" : "false");
+                        g_system_state.zero_point ? "true" : "false"*/);
                 strcat(response, temp);
             }
             

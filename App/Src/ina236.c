@@ -1,5 +1,5 @@
 #include "ina236.h"
-#include "i2c.h"
+#include "hal_instances.h"
 #include "system_state.h"
 #include <string.h>
 

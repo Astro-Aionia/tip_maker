@@ -1,7 +1,6 @@
 #include "stepper_motor.h"
 #include "system_state.h"
-#include "tim.h"
-#include "gpio.h"
+#include "hal_instances.h"
 #include <string.h>
 
 // 内部状态

@@ -1,7 +1,7 @@
 #include "sequence_controller.h"
 #include "system_state.h"
+#include "hal_instances.h"
 #include "stepper_motor.h"
-#include "gpio.h"
 #include <stdbool.h>
 
 static SequenceState_t seq_state = SEQ_IDLE;

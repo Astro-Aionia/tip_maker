@@ -51,7 +51,7 @@ I2C_HandleTypeDef hi2c1;
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
-SystemState_t g_system_state;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

@@ -66,6 +66,15 @@ Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
 Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
 Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c  
 
+# User C sources
+C_SOURCES +=  \
+App/Src/system_state.c \
+App/Src/stepper_motor.c \
+App/Src/ina236.c \
+App/Src/command_parser.c \
+App/Src/sequence_controller.c \
+App/Src/eeprom_emulation.c
+
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32f103xb.s
@@ -133,6 +142,10 @@ C_INCLUDES =  \
 -IMiddlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
 -IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
 -IDrivers/CMSIS/Include
+
+# User C includes
+C_INCLUDES +=  \
+-IApp/Inc
 
 
 # compile gcc flags

@@ -59,20 +59,20 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define SWITCH_CURRENT_PIN_Pin GPIO_PIN_0
-#define SWITCH_CURRENT_PIN_GPIO_Port GPIOA
-#define SWITCH_HOLDOFF_PIN_Pin GPIO_PIN_1
-#define SWITCH_HOLDOFF_PIN_GPIO_Port GPIOA
-#define SWITCH_DIVISION_PIN_Pin GPIO_PIN_2
-#define SWITCH_DIVISION_PIN_GPIO_Port GPIOA
-#define INPUT_ROUNDOUT_PIN_Pin GPIO_PIN_3
-#define INPUT_ROUNDOUT_PIN_GPIO_Port GPIOA
-#define INPUT_ZERO_PIN_Pin GPIO_PIN_4
-#define INPUT_ZERO_PIN_GPIO_Port GPIOA
-#define PWM_CW_PIN_Pin GPIO_PIN_8
-#define PWM_CW_PIN_GPIO_Port GPIOA
-#define PWM_CCW_PIN_Pin GPIO_PIN_9
-#define PWM_CCW_PIN_GPIO_Port GPIOA
+#define SWITCH_CURRENT_Pin GPIO_PIN_0
+#define SWITCH_CURRENT_GPIO_Port GPIOA
+#define SWITCH_HOLDOFF_Pin GPIO_PIN_1
+#define SWITCH_HOLDOFF_GPIO_Port GPIOA
+#define SWITCH_DIVISION_Pin GPIO_PIN_2
+#define SWITCH_DIVISION_GPIO_Port GPIOA
+#define INPUT_ROUNDOUT_Pin GPIO_PIN_3
+#define INPUT_ROUNDOUT_GPIO_Port GPIOA
+#define INPUT_ZERO_Pin GPIO_PIN_4
+#define INPUT_ZERO_GPIO_Port GPIOA
+#define PWM_CW_Pin GPIO_PIN_8
+#define PWM_CW_GPIO_Port GPIOA
+#define PWM_CCW_Pin GPIO_PIN_9
+#define PWM_CCW_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

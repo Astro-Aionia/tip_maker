@@ -112,7 +112,7 @@ void StepperMotor_Move(MotorDirection_t dir, uint16_t steps) {
     g_system_state.motor_moving = true;
     g_system_state.target_steps = steps;
     g_system_state.current_steps = 0;
-    g_system_state.current_direction = (dir == MOTOR_DIR_CW) ? 'C' : 'W';
+    g_system_state.current_direction = (dir == MOTOR_DIR_CW) ? '+' : '-';
 }
 
 void StepperMotor_CountinueMove(MotorDirection_t dir){
@@ -165,7 +165,9 @@ void StepperMotor_Stop(void) {
     
     // 更新系统状态
     g_system_state.motor_moving = false;
-    g_system_state.current_direction = 'S';
+    g_system_state.current_direction = '0';
+    g_system_state.current_steps = 0;
+    g_system_state.target_steps = 0;
 
      // 如果有回调函数，调用它
     if (motor_state.pulse_complete_callback != NULL) {

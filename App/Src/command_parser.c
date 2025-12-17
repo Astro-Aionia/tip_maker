@@ -41,7 +41,8 @@ void CommandParser_Process(const char *cmd) {
         
         if (sscanf(cmd + 4, "%s %s", key, value) == 2) {
             bool success = true;
-            
+            char value_str[32] = {0};
+            snprintf(value_str, sizeof(value_str), "%s", value);
             if (strcmp(key, "FREQ") == 0) {
                 uint16_t freq = atoi(value);
                 if (freq >= 0 && freq <= 1000) {
@@ -59,9 +60,11 @@ void CommandParser_Process(const char *cmd) {
             else if (strcmp(key, "CURRENT") == 0) {
                 if (strcmp(value, "ON") == 0) {
                     g_system_state.switch_current = true;
+                    snprintf(value_str, sizeof(value_str), "true");
                     HAL_GPIO_WritePin(SWITCH_CURRENT_GPIO_Port, SWITCH_CURRENT_Pin, GPIO_PIN_SET);
                 } else if (strcmp(value, "OFF") == 0) {
                     g_system_state.switch_current = false;
+                    snprintf(value_str, sizeof(value_str), "false");
                     HAL_GPIO_WritePin(SWITCH_CURRENT_GPIO_Port, SWITCH_CURRENT_Pin, GPIO_PIN_RESET);
                 } else {
                     success = false;
@@ -70,9 +73,11 @@ void CommandParser_Process(const char *cmd) {
             else if (strcmp(key, "HOLDOFF") == 0) {
                 if (strcmp(value, "ON") == 0) {
                     g_system_state.switch_holdoff = true;
+                    snprintf(value_str, sizeof(value_str), "true");
                     StepperMotor_UpdateSwitches(g_system_state.switch_holdoff, g_system_state.switch_division);
                 } else if (strcmp(value, "OFF") == 0) {
                     g_system_state.switch_holdoff = false;
+                    snprintf(value_str, sizeof(value_str), "false");
                     StepperMotor_UpdateSwitches(g_system_state.switch_holdoff, g_system_state.switch_division);
                 } else {
                     success = false;
@@ -81,10 +86,21 @@ void CommandParser_Process(const char *cmd) {
             else if (strcmp(key, "DIVISION") == 0) {
                 if (strcmp(value, "ON") == 0) {
                     g_system_state.switch_division = true;
+                    snprintf(value_str, sizeof(value_str), "true");
                     StepperMotor_UpdateSwitches(g_system_state.switch_holdoff, true);
                 } else if (strcmp(value, "OFF") == 0) {
                     g_system_state.switch_division = false;
+                    snprintf(value_str, sizeof(value_str), "false");
                     StepperMotor_UpdateSwitches(g_system_state.switch_holdoff, false);
+                } else {
+                    success = false;
+                }
+            }
+            else if (strcmp(key, "DEBUGLEVEL") == 0)
+            {
+                uint8_t level = atoi(value);
+                if (level <= 3) {
+                    g_system_state.debug_level = level;
                 } else {
                     success = false;
                 }
@@ -97,11 +113,11 @@ void CommandParser_Process(const char *cmd) {
             if (success) {
                 snprintf(response, sizeof(response), 
                         "{\"Cmd\": \"SET\", \"Status\": \"Success\", \"Parameter\": \"%s\", \"Value\": \"%s\"}\r\n",
-                        key, value);
+                        key, value_str);
             } else {
                 snprintf(response, sizeof(response), 
                         "{\"Cmd\": \"SET\", \"Status\": \"Error\", \"Parameter\": \"%s\", \"Value\": \"%s\"}\r\n",
-                        key, value);
+                        key, value_str);
             }
         }
     }
@@ -121,15 +137,22 @@ void CommandParser_Process(const char *cmd) {
         }
         else if (strcmp(key, "CURRENT") == 0) {
             snprintf(value_str, sizeof(value_str), "%s", 
-                    g_system_state.switch_current ? "ON" : "OFF");
+                    g_system_state.switch_current ? "true" : "false");
         }
         else if (strcmp(key, "HOLDOFF") == 0) {
             snprintf(value_str, sizeof(value_str), "%s", 
-                    g_system_state.switch_holdoff ? "OFF" : "ON");
+                    g_system_state.switch_holdoff ? "true" : "false");
         }
         else if (strcmp(key, "DIVISION") == 0) {
             snprintf(value_str, sizeof(value_str), "%s", 
-                    g_system_state.switch_division ? "ON" : "OFF");
+                    g_system_state.switch_division ? "true" : "false");
+        }
+        else if (strcmp(key, "ZEROPOINT") == 0) {
+            snprintf(value_str, sizeof(value_str), "%s", 
+                    g_system_state.zero_point ? "true" : "false");
+        }
+        else if (strcmp(key, "ROUNDCOUNT") == 0) {
+            snprintf(value_str, sizeof(value_str), "%d", g_system_state.round_count);
         }
         else {
             success = false;
@@ -180,7 +203,7 @@ void CommandParser_Process(const char *cmd) {
         
         for (int i = 0; i < 8; i++) {
             char temp[16];
-            snprintf(temp, sizeof(temp), "%.6f", g_system_state.current_buffer[i]);
+            snprintf(temp, sizeof(temp), "%d", g_system_state.current_buffer[i]);
             strcat(response, temp);
             
             if (i < 7) {
@@ -195,55 +218,51 @@ void CommandParser_Process(const char *cmd) {
         snprintf(response, sizeof(response), 
                 "{\"Cmd\": \"START\", \"Status\": \"Success\"}\r\n");
     }
-    else if (strncmp(cmd, "STATUS ", 7) == 0) {
+    else if (strcmp(cmd, "STATUS") == 0) {
         // STATUS命令处理
-        int level = atoi(cmd + 7);
-        
-        if (level >= 1 && level <= 3) {
+        if (g_system_state.debug_level >= 0 && g_system_state.debug_level <= 3) {
+            // Level 0: 基本输出
             snprintf(response, sizeof(response), 
-                    "{\"Cmd\": \"STATUS\", \"Status\": \"Success\", \"Level\": %d", level);
+                    "{\"Cmd\": \"STATUS\", \"Status\": \"Success\", \"Level\": %d", g_system_state.debug_level);
             
+            char temp[256];
+
             // Level 1: 用户可设置的5个参数
-            char temp[128];
-            snprintf(temp, sizeof(temp), 
-                    ", \"FREQ\": %d, \"THRES\": %.6f, \"CURRENT\": \"%s\", "
-                    "\"HOLDOFF\": \"%s\", \"DIVISION\": \"%s\"",
-                    g_system_state.freq, g_system_state.threshold,
-                    g_system_state.switch_current ? "ON" : "OFF",
-                    g_system_state.switch_holdoff ? "OFF" : "ON",
-                    g_system_state.switch_division ? "ON" : "OFF");
-            strcat(response, temp);
-            
-            // Level 2: 添加最后一个电流值
-            if (level >= 2) {
+            if (g_system_state.debug_level >= 1){
                 snprintf(temp, sizeof(temp), 
-                        ", \"LastCurrent\": %.6f", 
+                        ", \"FREQ\": %d, \"THRES\": %d, \"CURRENT\": \"%s\", "
+                        "\"HOLDOFF\": \"%s\", \"DIVISION\": \"%s\"",
+                        g_system_state.freq, g_system_state.threshold,
+                        g_system_state.switch_current ? "ON" : "OFF",
+                        g_system_state.switch_holdoff ? "ON" : "OFF",
+                        g_system_state.switch_division ? "ON" : "OFF");
+                strcat(response, temp);
+            }
+                        
+            // Level 2: 添加最后一个电流值
+            if (g_system_state.debug_level >= 2) {
+                snprintf(temp, sizeof(temp), 
+                        ", \"LastCurrent\": %d", 
                         g_system_state.current_buffer[(g_system_state.buffer_index + 7) % 8]);
                 strcat(response, temp);
             }
             
             // Level 3: 添加详细状态
-            if (level >= 3) {
+            if (g_system_state.debug_level >= 3) {
                 snprintf(temp, sizeof(temp), 
-                        ", \"MotorMoving\": %s, \"TargetSteps\": %d, \"CurrentSteps\": %d, "
-                        "\"CurrentDirection\": \"%c\"",
-                        g_system_state.motor_moving ? "true" : "false",
-                        g_system_state.target_steps, g_system_state.current_steps,
-                        g_system_state.current_direction
-                        /*", \"MotorMoving\": %s, \"TargetSteps\": %d, \"CurrentSteps\": %d, "
-                        "\"CurrentDirection\": \"%c\", \"RoundCount\": %d, \"ZeroPoint\": %s",
-                        g_system_state.motor_moving ? "true" : "false",
-                        g_system_state.target_steps, g_system_state.current_steps,
+                        ", \"Motor\": \"%c\", \"TargetStep\": %d, \"CurrentStep\": %d, "
+                        "\"RoundCount\": %d, \"ZeroPoint\": %s",
                         g_system_state.current_direction,
+                        g_system_state.target_steps, g_system_state.current_steps,
                         g_system_state.round_count,
-                        g_system_state.zero_point ? "true" : "false"*/);
+                        g_system_state.zero_point ? "true" : "false");
                 strcat(response, temp);
             }
             
             strcat(response, "}\r\n");
         } else {
             snprintf(response, sizeof(response), 
-                    "{\"Cmd\": \"STATUS\", \"Status\": \"Error\", \"Level\": %d}\r\n", level);
+                    "{\"Cmd\": \"STATUS\", \"Status\": \"Error\", \"Level\": %d}\r\n", g_system_state.debug_level);
         }
     }
     else if (strncmp(cmd, "DEBUG ", 6) == 0) {

@@ -145,8 +145,7 @@ int main(void)
         last_debug_time = current_time;
         
         char debug_cmd[32];
-        snprintf(debug_cmd, sizeof(debug_cmd), "STATUS %d", 
-                g_system_state.debug_level);
+        snprintf(debug_cmd, sizeof(debug_cmd), "STATUS");
         CommandParser_Process(debug_cmd);
     }
   }

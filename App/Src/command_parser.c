@@ -69,11 +69,11 @@ void CommandParser_Process(const char *cmd) {
             }
             else if (strcmp(key, "HOLDOFF") == 0) {
                 if (strcmp(value, "ON") == 0) {
-                    g_system_state.switch_holdoff = false;  // ON代表False
-                    StepperMotor_UpdateSwitches(false, g_system_state.switch_division);
+                    g_system_state.switch_holdoff = true;
+                    StepperMotor_UpdateSwitches(g_system_state.switch_holdoff, g_system_state.switch_division);
                 } else if (strcmp(value, "OFF") == 0) {
-                    g_system_state.switch_holdoff = true;   // OFF代表True
-                    StepperMotor_UpdateSwitches(true, g_system_state.switch_division);
+                    g_system_state.switch_holdoff = false;
+                    StepperMotor_UpdateSwitches(g_system_state.switch_holdoff, g_system_state.switch_division);
                 } else {
                     success = false;
                 }

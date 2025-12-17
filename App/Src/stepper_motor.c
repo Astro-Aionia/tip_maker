@@ -178,9 +178,9 @@ bool StepperMotor_IsMoving(void) {
 }
 
 void StepperMotor_UpdateSwitches(bool holdoff, bool division) {
-    // 更新HOLDOFF开关（注意：ON代表False，OFF代表True）
+    // 更新HOLDOFF开关
     HAL_GPIO_WritePin(SWITCH_HOLDOFF_GPIO_Port, SWITCH_HOLDOFF_Pin, 
-                     holdoff ? GPIO_PIN_RESET : GPIO_PIN_SET);
+                     holdoff ? GPIO_PIN_SET : GPIO_PIN_RESET);
     
     // 更新细分选择开关
     HAL_GPIO_WritePin(SWITCH_DIVISION_GPIO_Port, SWITCH_DIVISION_Pin, 

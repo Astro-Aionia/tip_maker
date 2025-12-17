@@ -92,10 +92,11 @@ tip_maker/
 
 ## TODO
 
-- Check the logic of the digital output pin.
+- Optimize DEBUG serial commands.
 - Set the parameters of INA236 correctly.
-- Optimize storage usage
+- Optimize storage usage.
 - Make the hardware circuit, test the sequence controller.
+- Optimize json response off bool variables.
 
 ## Getting Started
 

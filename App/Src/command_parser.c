@@ -47,7 +47,6 @@ void CommandParser_Process(const char *cmd) {
                 uint16_t freq = atoi(value);
                 if (freq >= 0 && freq <= 1000) {
                     g_system_state.freq = freq;
-                    // SystemState_SaveToEEPROM();
                 } else {
                     success = false;
                 }
@@ -55,7 +54,6 @@ void CommandParser_Process(const char *cmd) {
             else if (strcmp(key, "THRES") == 0) {
                 int16_t thres = atoi(value);
                 g_system_state.threshold = thres;
-                // SystemState_SaveToEEPROM();
             }
             else if (strcmp(key, "CURRENT") == 0) {
                 if (strcmp(value, "ON") == 0) {
@@ -284,6 +282,12 @@ void CommandParser_Process(const char *cmd) {
             snprintf(response, sizeof(response), 
                     "{\"Cmd\": \"DEBUG\", \"Status\": \"Error\", \"Level\": %d}\r\n", level);
         }
+    }
+    else if (strcmp(cmd, "SAVE") == 0)
+    {
+        SystemState_SaveToEEPROM();
+        snprintf(response, sizeof(response), 
+                "{\"Cmd\": \"SAVE\", \"Status\": \"Success\"}\r\n");
     }
     else {
         // 未知命令

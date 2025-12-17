@@ -28,7 +28,7 @@ void SystemState_Init(void) {
     g_system_state.freq = g_system_state.origin_freq;
     g_system_state.threshold = 50;
     // 从EEPROM加载用户设置
-    // SystemState_LoadFromEEPROM();
+    SystemState_LoadFromEEPROM();
     
     // 如果EEPROM中没有值，使用默认值
     /*if (g_system_state.freq > 1000) {
@@ -88,18 +88,24 @@ void SystemState_UpdateInputs(void) {
 
 void SystemState_SaveToEEPROM(void) {
     EE_WriteVariable(0x0001, g_system_state.freq);
-    EE_WriteVariable(0x0002, *(uint32_t*)&g_system_state.threshold);
+    EE_WriteVariable(0x0002, g_system_state.threshold);
+    EE_WriteVariable(0x0003, g_system_state.debug_level);
 }
 
 void SystemState_LoadFromEEPROM(void) {
     uint32_t freq_value;
     uint32_t threshold_value;
+    uint32_t debug_level_value;
     
     if (EE_ReadVariable(0x0001, &freq_value) == 0) {
         g_system_state.freq = (uint16_t)freq_value;
     }
     
     if (EE_ReadVariable(0x0002, &threshold_value) == 0) {
-        g_system_state.threshold = *(float*)&threshold_value;
+        g_system_state.threshold = (uint16_t)&threshold_value;
+    }
+
+    if (EE_ReadVariable(0x0003, &debug_level_value) == 0) {
+        g_system_state.debug_level = (uint8_t)debug_level_value;
     }
 }

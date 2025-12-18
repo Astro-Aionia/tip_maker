@@ -25,8 +25,8 @@ static void MotorPulseCompleteCallback(void) {
 void SystemState_Init(void) {
     // 初始化固有参数
     g_system_state.origin_freq = 1000;
-    g_system_state.freq = g_system_state.origin_freq;
-    g_system_state.threshold = 50;
+    // g_system_state.freq = g_system_state.origin_freq;
+    // g_system_state.threshold = 50;
     // 从EEPROM加载用户设置
     SystemState_LoadFromEEPROM();
     
@@ -49,7 +49,7 @@ void SystemState_Init(void) {
     g_system_state.buffer_index = 0;
     
     // 初始化调试模式
-    g_system_state.debug_level = 1;
+    // g_system_state.debug_level = 1;
     g_system_state.debug_enabled = false;
 
     // 设置脉冲完成回调
@@ -60,12 +60,16 @@ void SystemState_Init(void) {
     g_system_state.target_steps = 0;
     g_system_state.current_steps = 0;
     g_system_state.current_direction = '0'; // 0表示停止
+
+    // 初始化INA236通讯状态
+    g_system_state.ina236_init_stat = false;
+    g_system_state.ina236_read_stat = false;
 }
 
-void SystemState_UpdateCurrent(float current) {
+void SystemState_UpdateCurrent(uint16_t current) {
     // 更新电流缓冲区
     g_system_state.current_buffer[g_system_state.buffer_index] = current;
-    g_system_state.buffer_index = (g_system_state.buffer_index + 1) % 8;
+    g_system_state.buffer_index = (g_system_state.buffer_index + 1) % BUFFER_SIZE;
 }
 
 void SystemState_ResetRoundCount(void) {

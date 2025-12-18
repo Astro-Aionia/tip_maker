@@ -36,7 +36,7 @@ void CommandParser_Process(const char *cmd) {
     // 解析命令类型
     if (strncmp(cmd, "SET ", 4) == 0) {
         // SET命令处理
-        char key[32] = {0};
+        char key[16] = {0};
         char value[32] = {0};
         
         if (sscanf(cmd + 4, "%s %s", key, value) == 2) {
@@ -103,6 +103,18 @@ void CommandParser_Process(const char *cmd) {
                     success = false;
                 }
             }
+            else if (strcmp(key, "DEBUG") == 0)
+            {
+                if (strcmp(value, "ON") == 0) {
+                    g_system_state.debug_enabled = true;
+                    snprintf(value_str, sizeof(value_str), "true");
+                } else if (strcmp(value, "OFF") == 0) {
+                    g_system_state.debug_enabled = false;
+                    snprintf(value_str, sizeof(value_str), "false");
+                } else {
+                    success = false;
+                }
+            }
             else {
                 success = false;
             }
@@ -121,10 +133,10 @@ void CommandParser_Process(const char *cmd) {
     }
     else if (strncmp(cmd, "GET ", 4) == 0) {
         // GET命令处理
-        char key[32] = {0};
+        char key[16] = {0};
         sscanf(cmd + 4, "%s", key);
         
-        char value_str[32] = {0};
+        char value_str[64] = {0};
         bool success = true;
         
         if (strcmp(key, "FREQ") == 0) {
@@ -151,6 +163,34 @@ void CommandParser_Process(const char *cmd) {
         }
         else if (strcmp(key, "ROUNDCOUNT") == 0) {
             snprintf(value_str, sizeof(value_str), "%d", g_system_state.round_count);
+        }
+        else if (strcmp(key, "INA236INIT") == 0)
+        {
+            snprintf(value_str, sizeof(value_str), "%s", 
+                    g_system_state.ina236_init_stat ? "true" : "false");
+        }
+        else if (strcmp(key, "INA236READ") == 0)
+        {
+            snprintf(value_str, sizeof(value_str), "%s", 
+                    g_system_state.ina236_read_stat ? "true" : "false");
+        }
+        else if (strcmp(key, "DATA") == 0)
+        {
+            snprintf(value_str, sizeof(value_str), "[");
+            for (int i = 0; i < BUFFER_SIZE; i++) {
+                char temp[8];
+                snprintf(temp, sizeof(temp), "%d", g_system_state.current_buffer[i]);
+                strcat(value_str, temp);
+                
+                if (i < BUFFER_SIZE - 1) {
+                    strcat(value_str, ", ");
+                }
+            }
+            strcat(value_str, "]");
+        }
+        else if (strcmp(key, "DEBUGLEVEL") == 0)
+        {
+            snprintf(value_str, sizeof(value_str), "%d", g_system_state.debug_level);
         }
         else {
             success = false;
@@ -194,22 +234,6 @@ void CommandParser_Process(const char *cmd) {
                     "{\"Cmd\": \"MOVE\", \"Status\": \"Error\"}\r\n");
         }
     }
-    else if (strcmp(cmd, "POLL") == 0) {
-        // POLL命令处理
-        snprintf(response, sizeof(response), 
-                "{\"Cmd\": \"POLL\", \"Status\": \"Success\", \"Data\": [");
-        
-        for (int i = 0; i < 8; i++) {
-            char temp[16];
-            snprintf(temp, sizeof(temp), "%d", g_system_state.current_buffer[i]);
-            strcat(response, temp);
-            
-            if (i < 7) {
-                strcat(response, ", ");
-            }
-        }
-        strcat(response, "]}\r\n");
-    }
     else if (strcmp(cmd, "START") == 0) {
         // START命令处理
         SequenceController_Start();
@@ -241,7 +265,7 @@ void CommandParser_Process(const char *cmd) {
             if (g_system_state.debug_level >= 2) {
                 snprintf(temp, sizeof(temp), 
                         ", \"LastCurrent\": %d", 
-                        g_system_state.current_buffer[(g_system_state.buffer_index + 7) % 8]);
+                        g_system_state.current_buffer[(g_system_state.buffer_index + BUFFER_SIZE - 1) % BUFFER_SIZE]);
                 strcat(response, temp);
             }
             
@@ -261,26 +285,6 @@ void CommandParser_Process(const char *cmd) {
         } else {
             snprintf(response, sizeof(response), 
                     "{\"Cmd\": \"STATUS\", \"Status\": \"Error\", \"Level\": %d}\r\n", g_system_state.debug_level);
-        }
-    }
-    else if (strncmp(cmd, "DEBUG ", 6) == 0) {
-        // DEBUG命令处理
-        int level = atoi(cmd + 6);
-        
-        if (level == 0) {
-            g_system_state.debug_enabled = false;
-            snprintf(response, sizeof(response), 
-                    "{\"Cmd\": \"DEBUG\", \"Status\": \"Success\", \"DebugMode\": \"OFF\"}\r\n");
-        }
-        else if (level >= 1 && level <= 3) {
-            g_system_state.debug_enabled = true;
-            g_system_state.debug_level = level;
-            snprintf(response, sizeof(response), 
-                    "{\"Cmd\": \"DEBUG\", \"Status\": \"Success\", \"DebugMode\": \"ON\", \"Level\": %d}\r\n",
-                    level);
-        } else {
-            snprintf(response, sizeof(response), 
-                    "{\"Cmd\": \"DEBUG\", \"Status\": \"Error\", \"Level\": %d}\r\n", level);
         }
     }
     else if (strcmp(cmd, "SAVE") == 0)

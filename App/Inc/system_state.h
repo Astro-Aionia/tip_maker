@@ -4,6 +4,10 @@
 #include "stdint.h"
 #include "stdbool.h"
 
+// 系统固定参数
+#define ORIGIN_FREQ 1000 // 默认频率1000Hz
+#define BUFFER_SIZE 8   // 电流缓冲区大小
+
 // 系统状态结构体
 typedef struct {
     // 固有参数
@@ -23,7 +27,7 @@ typedef struct {
     uint16_t round_count;
     
     // 电流缓冲区
-    int16_t current_buffer[8];
+    int16_t current_buffer[BUFFER_SIZE];
     uint8_t buffer_index;
     
     // 调试模式
@@ -35,6 +39,10 @@ typedef struct {
     uint16_t target_steps;
     uint16_t current_steps;
     char current_direction;
+
+    //INA236 通讯状态
+    bool ina236_init_stat;
+    bool ina236_read_stat;
 } SystemState_t;
 
 // 全局系统状态实例
@@ -42,7 +50,7 @@ extern SystemState_t g_system_state;
 
 // 函数声明
 void SystemState_Init(void);
-void SystemState_UpdateCurrent(float current);
+void SystemState_UpdateCurrent(uint16_t current);
 void SystemState_ResetRoundCount(void);
 void SystemState_UpdateInputs(void);
 void SystemState_SaveToEEPROM(void);

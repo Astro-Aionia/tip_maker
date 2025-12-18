@@ -3,18 +3,20 @@
 #include "system_state.h"
 #include <string.h>
 
-#define CURRENT_LSB 0.00000025f
-#define SHUNT_CAL_VALUE 5.0f
-
-static bool ina236_initialized = false;
+// INA236电流校准参数
+#define CURRENT_LSB_NANO 250 //最大电流为8192uA
+#define SHUNT_CAL 621 //测试电阻为33Ω 
 
 bool INA236_Init(void) {
+    g_system_state.ina236_init_stat = false;
+
+    // 设置配置寄存器
     uint8_t config_data[3] = {0};
     
-    // 配置寄存器：0x8127
+    // 配置寄存器：0x4027
     config_data[0] = INA236_REG_CONFIG;
-    config_data[1] = 0x27;  // 低字节
-    config_data[2] = 0x81;  // 高字节
+    config_data[1] = 0x40;  // 高字节
+    config_data[2] = 0x27;  // 低字节
     
     if (HAL_I2C_Master_Transmit(&hi2c1, INA236_ADDRESS << 1, 
                                config_data, 3, 100) != HAL_OK) {
@@ -22,30 +24,28 @@ bool INA236_Init(void) {
     }
     
     // 设置校准寄存器
-    INA236_SetCalibration();
+    uint8_t cal_data[3] = {0};
     
-    ina236_initialized = true;
+    // 配置寄存器：SHUNT_CAL
+    cal_data[0] = INA236_REG_CALIBRATION;
+    cal_data[1] = (uint8_t)(SHUNT_CAL >> 8);   // 高字节
+    cal_data[2] = (uint8_t)(SHUNT_CAL & 0xFF); // 低字节
+    
+    if (HAL_I2C_Master_Transmit(&hi2c1, INA236_ADDRESS << 1, 
+                            cal_data, 3, 100) != HAL_OK) {
+        return false;
+    }
+    
+    g_system_state.ina236_init_stat = true;
     return true;
 }
 
-void INA236_SetCalibration(void) {
-    uint8_t cal_data[3] = {0};
-    uint16_t cal_value;
-    
-    // 计算校准值
-    cal_value = (uint16_t)(0.00512 / (CURRENT_LSB * SHUNT_CAL_VALUE));
-    
-    cal_data[0] = INA236_REG_CALIBRATION;
-    cal_data[1] = cal_value & 0xFF;        // 低字节
-    cal_data[2] = (cal_value >> 8) & 0xFF; // 高字节
-    
-    HAL_I2C_Master_Transmit(&hi2c1, INA236_ADDRESS << 1, cal_data, 3, 100);
-}
+bool INA236_ReadCurrent(uint16_t *current) {
+    g_system_state.ina236_read_stat = false;
 
-bool INA236_ReadCurrent(float *current) {
-    if (!ina236_initialized) return false;
+    if (!g_system_state.ina236_init_stat) return false;
     
-    uint8_t reg_addr = INA236_REG_CURRENT;
+    uint8_t reg_addr = INA236_REG_SHUNT_VOLT;
     uint8_t read_data[2] = {0};
     
     // 写入要读取的寄存器地址
@@ -64,7 +64,8 @@ bool INA236_ReadCurrent(float *current) {
     int16_t raw_current = (read_data[0] << 8) | read_data[1];
     
     // 转换为实际电流值（安培）
-    *current = raw_current * CURRENT_LSB;
+    *current = raw_current * CURRENT_LSB_NANO / 1000; // 转换为微安培单位
     
+    g_system_state.ina236_read_stat = true;
     return true;
 }

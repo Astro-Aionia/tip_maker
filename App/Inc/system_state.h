@@ -11,7 +11,7 @@
 // 系统状态结构体
 typedef struct {
     // 固有参数
-    uint16_t origin_freq;
+    // uint16_t origin_freq;
     
     // 用户可调参数
     uint16_t freq;

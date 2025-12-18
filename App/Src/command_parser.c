@@ -110,11 +110,11 @@ void CommandParser_Process(const char *cmd) {
             // 发送响应
             if (success) {
                 snprintf(response, sizeof(response), 
-                        "{\"Cmd\": \"SET\", \"Status\": \"Success\", \"Parameter\": \"%s\", \"Value\": \"%s\"}\r\n",
+                        "{\"Cmd\": \"SET\", \"Status\": \"Success\", \"Parameter\": \"%s\", \"Value\": %s}\r\n",
                         key, value_str);
             } else {
                 snprintf(response, sizeof(response), 
-                        "{\"Cmd\": \"SET\", \"Status\": \"Error\", \"Parameter\": \"%s\", \"Value\": \"%s\"}\r\n",
+                        "{\"Cmd\": \"SET\", \"Status\": \"Error\", \"Parameter\": \"%s\", \"Value\": %s}\r\n",
                         key, value_str);
             }
         }
@@ -158,7 +158,7 @@ void CommandParser_Process(const char *cmd) {
         
         if (success) {
             snprintf(response, sizeof(response), 
-                    "{\"Cmd\": \"GET\", \"Status\": \"Success\", \"Parameter\": \"%s\", \"Value\": \"%s\"}\r\n",
+                    "{\"Cmd\": \"GET\", \"Status\": \"Success\", \"Parameter\": \"%s\", \"Value\": %s}\r\n",
                     key, value_str);
         } else {
             snprintf(response, sizeof(response), 
@@ -228,12 +228,12 @@ void CommandParser_Process(const char *cmd) {
             // Level 1: 用户可设置的5个参数
             if (g_system_state.debug_level >= 1){
                 snprintf(temp, sizeof(temp), 
-                        ", \"FREQ\": %d, \"THRES\": %d, \"CURRENT\": \"%s\", "
-                        "\"HOLDOFF\": \"%s\", \"DIVISION\": \"%s\"",
+                        ", \"FREQ\": %d, \"THRES\": %d, \"CURRENT\": %s, "
+                        "\"HOLDOFF\": %s, \"DIVISION\": %s",
                         g_system_state.freq, g_system_state.threshold,
-                        g_system_state.switch_current ? "ON" : "OFF",
-                        g_system_state.switch_holdoff ? "ON" : "OFF",
-                        g_system_state.switch_division ? "ON" : "OFF");
+                        g_system_state.switch_current ? "true" : "false",
+                        g_system_state.switch_holdoff ? "true" : "false",
+                        g_system_state.switch_division ? "true" : "false");
                 strcat(response, temp);
             }
                         

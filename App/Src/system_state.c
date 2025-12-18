@@ -49,7 +49,7 @@ void SystemState_Init(void) {
     g_system_state.buffer_index = 0;
     
     // 初始化调试模式
-    g_system_state.debug_level = 0;
+    g_system_state.debug_level = 1;
     g_system_state.debug_enabled = false;
 
     // 设置脉冲完成回调
@@ -59,7 +59,7 @@ void SystemState_Init(void) {
     g_system_state.motor_moving = false;
     g_system_state.target_steps = 0;
     g_system_state.current_steps = 0;
-    g_system_state.current_direction = 'S'; // S表示停止
+    g_system_state.current_direction = '0'; // 0表示停止
 }
 
 void SystemState_UpdateCurrent(float current) {

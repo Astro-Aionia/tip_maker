@@ -24,7 +24,7 @@ static void MotorPulseCompleteCallback(void) {
 
 void SystemState_Init(void) {
     // 初始化固有参数
-    g_system_state.origin_freq = 1000;
+    //g_system_state.origin_freq = 1000;
     // g_system_state.freq = g_system_state.origin_freq;
     // g_system_state.threshold = 50;
     // 从EEPROM加载用户设置

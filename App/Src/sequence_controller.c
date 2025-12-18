@@ -89,7 +89,7 @@ void SequenceController_Process(void) {
             
             // 等待停止
             if (StepperMotor_IsMoving() == false) {
-                StepperMotor_SetFrequency(g_system_state.origin_freq);
+                StepperMotor_SetFrequency(ORIGIN_FREQ);
                 StepperMotor_Move(MOTOR_DIR_CW, 2000);
                 
                 seq_state = SEQ_COMPLETE;

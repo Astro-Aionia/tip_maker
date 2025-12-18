@@ -75,7 +75,7 @@ void StepperMotor_Move(MotorDirection_t dir, uint16_t steps) {
     motor_state.counting_enabled = true;
     
     // 设置频率为固有频率
-    StepperMotor_SetFrequency(g_system_state.origin_freq);
+    StepperMotor_SetFrequency(ORIGIN_FREQ);
 
     // 重置计数器
     __HAL_TIM_SET_COUNTER(&htim1, 0);

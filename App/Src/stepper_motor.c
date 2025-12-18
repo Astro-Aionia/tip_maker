@@ -232,3 +232,28 @@ void StepperMotor_TIM1_Update_IRQHandler(void) {
         }
     }
 }
+
+// 外部中断处理函数（用于原点励磁计数）
+void StepperMotor_EXTI3_Update_IRQHandler(void) {
+     // 检查是否是PA3触发的中断
+    if (__HAL_GPIO_EXTI_GET_IT(INPUT_ROUNDOUT_Pin) != RESET) {
+        // 清除中断标志
+        __HAL_GPIO_EXTI_CLEAR_IT(INPUT_ROUNDOUT_Pin);
+        
+        // 检查电机方向
+        switch (g_system_state.current_direction) {
+        case 'C': // 正转
+            SystemState_UpdateRoundCount(true); // 增加
+            break;
+            
+        case 'W': // 反转
+            SystemState_UpdateRoundCount(false); // 减少
+            break;
+            
+        case 'S': // 停止
+        default:
+            // 停止状态，忽略信号（可能是干扰）
+            break;
+        }
+    }
+}

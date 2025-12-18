@@ -128,7 +128,7 @@ int main(void)
     }
     
     // 更新输入状态
-    SystemState_UpdateInputs();
+    SystemState_ZeroPoint();
     
     // 处理电机控制
     StepperMotor_Process();
@@ -338,11 +338,21 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : INPUT_ROUNDOUT_Pin INPUT_ZERO_Pin */
-  GPIO_InitStruct.Pin = INPUT_ROUNDOUT_Pin|INPUT_ZERO_Pin;
+  /*Configure GPIO pin : INPUT_ROUNDOUT_Pin */
+  GPIO_InitStruct.Pin = INPUT_ROUNDOUT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(INPUT_ROUNDOUT_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : INPUT_ZERO_Pin */
+  GPIO_InitStruct.Pin = INPUT_ZERO_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(INPUT_ZERO_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI3_IRQn, 2, 0);
+  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 

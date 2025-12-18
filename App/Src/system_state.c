@@ -73,21 +73,60 @@ void SystemState_UpdateCurrent(uint16_t current) {
 }
 
 void SystemState_ResetRoundCount(void) {
+     // 临界区保护
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+    
     g_system_state.round_count = 0;
+    
+    __set_PRIMASK(primask);
 }
 
-void SystemState_UpdateInputs(void) {
-    // 这里需要读取GPIO输入状态
-    // 实际实现需要根据具体的GPIO配置来修改
-    // g_system_state.zero_point = HAL_GPIO_ReadPin(INPUT_ZERO_GPIO_Port, INPUT_ZERO_Pin);
+// 安全获取round_count
+uint16_t SystemState_GetRoundCount(void) {
+    uint16_t count;
     
-    // 检测原点信号上升沿
-    static bool last_roundout_state = false;
-    bool current_roundout_state = false; // 从GPIO读取
-    if (current_roundout_state && !last_roundout_state) {
-        g_system_state.round_count++;
+    // 临界区保护
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+    
+    count = g_system_state.round_count;
+    
+    __set_PRIMASK(primask);
+    
+    return count;
+}
+
+// 处理round_count变化
+void SystemState_UpdateRoundCount(bool increment) {
+    // 临界区保护，防止中断打断
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+    
+    // 根据方向增加或减少round_count
+    if (increment) {
+        if (g_system_state.round_count < 65535) { // 防止溢出
+            g_system_state.round_count++;
+        }
+    } else {
+        if (g_system_state.round_count > 0) { // 防止下溢
+            g_system_state.round_count--;
+        }
     }
-    last_roundout_state = current_roundout_state;
+}
+
+void SystemState_ZeroPoint(void) {
+    // 处理PA4(zero_point)的轮询检测
+    
+    // 读取PA4的电平状态
+    GPIO_PinState pin_state = HAL_GPIO_ReadPin(INPUT_ZERO_GPIO_Port, INPUT_ZERO_Pin);
+    
+    // 更新zero_point状态
+    if (pin_state == GPIO_PIN_SET) {
+        g_system_state.zero_point = true;
+    } else {
+        g_system_state.zero_point = false;
+    }
 }
 
 void SystemState_SaveToEEPROM(void) {

@@ -92,11 +92,9 @@ tip_maker/
 
 ## TODO
 
-- Optimize DEBUG serial commands.
-- Set the parameters of INA236 correctly.
-- Optimize storage usage.
-- Make the hardware circuit, test the sequence controller.
-- Optimize json response off bool variables.
+- fix round count
+- make PCB
+- build documentation
 
 ## Getting Started
 

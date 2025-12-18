@@ -52,8 +52,10 @@ extern SystemState_t g_system_state;
 void SystemState_Init(void);
 void SystemState_UpdateCurrent(uint16_t current);
 void SystemState_ResetRoundCount(void);
-void SystemState_UpdateInputs(void);
+void SystemState_ZeroPoint(void);
 void SystemState_SaveToEEPROM(void);
 void SystemState_LoadFromEEPROM(void);
+void SystemState_UpdateRoundCount(bool increment); // 处理round_count变化
+uint16_t SystemState_GetRoundCount(void); // 安全获取round_count（临界区保护）
 
 #endif /* __SYSTEM_STATE_H__ */

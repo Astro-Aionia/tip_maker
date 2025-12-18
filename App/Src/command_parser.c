@@ -94,6 +94,11 @@ void CommandParser_Process(const char *cmd) {
                     success = false;
                 }
             }
+            else if (strcmp(key, "ROUNDCOUNT") == 0)
+            {
+                SystemState_ResetRoundCount();
+                snprintf(value_str, sizeof(value_str), "0");
+            }
             else if (strcmp(key, "DEBUGLEVEL") == 0)
             {
                 uint8_t level = atoi(value);
@@ -276,7 +281,7 @@ void CommandParser_Process(const char *cmd) {
                         "\"RoundCount\": %d, \"ZeroPoint\": %s",
                         g_system_state.current_direction,
                         g_system_state.target_steps, g_system_state.current_steps,
-                        g_system_state.round_count,
+                        SystemState_GetRoundCount(),
                         g_system_state.zero_point ? "true" : "false");
                 strcat(response, temp);
             }

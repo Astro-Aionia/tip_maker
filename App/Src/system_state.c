@@ -28,7 +28,7 @@ void SystemState_Init(void) {
     g_system_state.threshold = 50;
 
     // 从EEPROM加载用户设置
-    //SystemState_LoadFromEEPROM();
+    // SystemState_LoadFromEEPROM();
     
     // 初始化开关状态
     g_system_state.switch_current = false;

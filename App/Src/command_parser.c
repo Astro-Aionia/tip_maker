@@ -94,12 +94,12 @@ void CommandParser_Process(const char *cmd) {
                     success = false;
                 }
             }
-            else if (strcmp(key, "ROUNDCOUNT") == 0)
+            else if (strcmp(key, "ROUND") == 0)
             {
                 SystemState_ResetRoundCount();
                 snprintf(value_str, sizeof(value_str), "0");
             }
-            else if (strcmp(key, "DEBUGLEVEL") == 0)
+            else if (strcmp(key, "LEVEL") == 0)
             {
                 uint8_t level = atoi(value);
                 if (level <= 3) {
@@ -211,7 +211,7 @@ void CommandParser_Process(const char *cmd) {
             }
             strcat(value_str, "]");
         }
-        else if (strcmp(key, "DEBUGLEVEL") == 0)
+        else if (strcmp(key, "LEVEL") == 0)
         {
             snprintf(value_str, sizeof(value_str), "%d", g_system_state.debug_level);
         }
@@ -268,7 +268,7 @@ void CommandParser_Process(const char *cmd) {
         if (g_system_state.debug_level >= 0 && g_system_state.debug_level <= 3) {
             // Level 0: 基本输出
             snprintf(response, sizeof(response), 
-                    "{\"Cmd\": \"STATUS\", \"Status\": \"Success\", \"Level\": %d", g_system_state.debug_level);
+                    "{\"Cmd\": \"STATUS\", \"Status\": \"Success\", \"LEVEL\": %d", g_system_state.debug_level);
             
             char temp[256];
 
@@ -290,7 +290,7 @@ void CommandParser_Process(const char *cmd) {
                         g_system_state.ina236_read_stat ? "true" : "false");
                 strcat(response, temp);
             }
-            else if (g_system_state.debug_level == 3) { // Level 3: 添加详细状态
+            else if (g_system_state.debug_level == 3) { // Level 3: 添加运动状态信息
                 snprintf(temp, sizeof(temp), 
                         ", \"MOVING\": %s, \"DIRECTION\": %s, \"TARGET\": %d, \"CURRENTSTEP\": %d, "
                         "\"ROUND\": %d, \"ZeroPoint\": %s, \"SQSTATE\": %d",

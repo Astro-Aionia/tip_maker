@@ -29,14 +29,14 @@ void StepperMotor_Init(void) {
     tim1_arr_value = htim1.Instance->ARR;
     tim1_psc_value = htim1.Instance->PSC;
     
-    // 停止PWM输出，设置引脚为高电平
+    // 停止PWM输出
     HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
     HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);
     HAL_TIM_Base_Stop_IT(&htim1);
     
     // 设置引脚为输出模式并置高
-    HAL_GPIO_WritePin(PWM_CW_GPIO_Port, PWM_CW_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(PWM_CCW_GPIO_Port, PWM_CCW_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(PWM_CW_GPIO_Port, PWM_CW_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(PWM_CCW_GPIO_Port, PWM_CCW_Pin, GPIO_PIN_RESET);
 
     // 清除更新中断标志
     __HAL_TIM_CLEAR_FLAG(&htim1, TIM_FLAG_UPDATE);
@@ -89,7 +89,7 @@ void StepperMotor_Move(MotorDirection_t dir, uint16_t steps) {
     if (dir == MOTOR_DIR_CW) {
         // 停止另一个方向
         HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);
-        HAL_GPIO_WritePin(PWM_CCW_GPIO_Port, PWM_CCW_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(PWM_CCW_GPIO_Port, PWM_CCW_Pin, GPIO_PIN_RESET);
         
         // 启动CW方向PWM和定时器中断
         HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
@@ -97,7 +97,7 @@ void StepperMotor_Move(MotorDirection_t dir, uint16_t steps) {
     } else if (dir == MOTOR_DIR_CCW) {
         // 停止另一个方向
         HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
-        HAL_GPIO_WritePin(PWM_CW_GPIO_Port, PWM_CW_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(PWM_CW_GPIO_Port, PWM_CW_Pin, GPIO_PIN_RESET);
         
         // 启动CCW方向PWM和定时器中断
         HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
@@ -126,7 +126,7 @@ void StepperMotor_CountinueMove(MotorDirection_t dir){
     if (motor_state.direction == MOTOR_DIR_CW) {
         // 停止另一个方向
         HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);
-        HAL_GPIO_WritePin(PWM_CCW_GPIO_Port, PWM_CCW_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(PWM_CCW_GPIO_Port, PWM_CCW_Pin, GPIO_PIN_RESET);
         
         // 启动CW方向PWM并关闭定时器中断
         HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
@@ -134,7 +134,7 @@ void StepperMotor_CountinueMove(MotorDirection_t dir){
     } else if (motor_state.direction == MOTOR_DIR_CCW) {
         // 停止另一个方向
         HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
-        HAL_GPIO_WritePin(PWM_CW_GPIO_Port, PWM_CW_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(PWM_CW_GPIO_Port, PWM_CW_Pin, GPIO_PIN_RESET);
         
         // 启动CCW方向PWM并关闭定时器中断
         HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
@@ -157,8 +157,8 @@ void StepperMotor_Stop(void) {
     HAL_TIM_Base_Stop_IT(&htim1);
     
     // 停止PWM，设置引脚为高电平    
-    HAL_GPIO_WritePin(PWM_CW_GPIO_Port, PWM_CW_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(PWM_CCW_GPIO_Port, PWM_CCW_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(PWM_CW_GPIO_Port, PWM_CW_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(PWM_CCW_GPIO_Port, PWM_CCW_Pin, GPIO_PIN_RESET);
 
     // 清除中断标志
     __HAL_TIM_CLEAR_FLAG(&htim1, TIM_FLAG_UPDATE);

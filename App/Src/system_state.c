@@ -23,17 +23,12 @@ static void MotorPulseCompleteCallback(void) {
 }
 
 void SystemState_Init(void) {
-    // 初始化固有参数
-    //g_system_state.origin_freq = 1000;
-    // g_system_state.freq = g_system_state.origin_freq;
-    // g_system_state.threshold = 50;
+    // 初始化参数
+    g_system_state.freq = 25;
+    g_system_state.threshold = 50;
+
     // 从EEPROM加载用户设置
-    SystemState_LoadFromEEPROM();
-    
-    // 如果EEPROM中没有值，使用默认值
-    /*if (g_system_state.freq > 1000) {
-        g_system_state.freq = 500; // 默认500Hz
-    }*/
+    //SystemState_LoadFromEEPROM();
     
     // 初始化开关状态
     g_system_state.switch_current = false;
@@ -49,7 +44,7 @@ void SystemState_Init(void) {
     g_system_state.buffer_index = 0;
     
     // 初始化调试模式
-    // g_system_state.debug_level = 1;
+    g_system_state.debug_level = 0;
     g_system_state.debug_enabled = false;
 
     // 设置脉冲完成回调

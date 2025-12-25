@@ -110,3 +110,7 @@ void SequenceController_Process(void) {
             break;
     }
 }
+
+SequenceState_t SequenceController_GetState(void) {
+    return seq_state;
+}

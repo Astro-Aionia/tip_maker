@@ -166,8 +166,26 @@ void CommandParser_Process(const char *cmd) {
             snprintf(value_str, sizeof(value_str), "%s", 
                     g_system_state.zero_point ? "true" : "false");
         }
-        else if (strcmp(key, "ROUNDCOUNT") == 0) {
+        else if (strcmp(key, "ROUND") == 0) {
             snprintf(value_str, sizeof(value_str), "%d", g_system_state.round_count);
+        }
+        else if (strcmp(key, "MOVING") == 0)
+        {
+            snprintf(value_str, sizeof(value_str), "%s", 
+                    g_system_state.motor_moving ? "true" : "false");
+        }
+        else if (strcmp(key, "DIRECTION") == 0)
+        {
+            snprintf(value_str, sizeof(value_str), "%s", 
+                    g_system_state.direction ? "true" : "false");
+        }
+        else if (strcmp(key, "TARGETSTEP") == 0)
+        {
+            snprintf(value_str, sizeof(value_str), "%d", g_system_state.target_steps);
+        }
+        else if (strcmp(key, "CURRENTSTEP") == 0)
+        {
+            snprintf(value_str, sizeof(value_str), "%d", g_system_state.current_steps);
         }
         else if (strcmp(key, "INA236INIT") == 0)
         {
@@ -254,8 +272,7 @@ void CommandParser_Process(const char *cmd) {
             
             char temp[256];
 
-            // Level 1: 用户可设置的5个参数
-            if (g_system_state.debug_level >= 1){
+            if (g_system_state.debug_level == 1){ // Level 1: 用户可设置的5个参数
                 snprintf(temp, sizeof(temp), 
                         ", \"FREQ\": %d, \"THRES\": %d, \"CURRENT\": %s, "
                         "\"HOLDOFF\": %s, \"DIVISION\": %s",
@@ -264,25 +281,25 @@ void CommandParser_Process(const char *cmd) {
                         g_system_state.switch_holdoff ? "true" : "false",
                         g_system_state.switch_division ? "true" : "false");
                 strcat(response, temp);
-            }
-                        
-            // Level 2: 添加最后一个电流值
-            if (g_system_state.debug_level >= 2) {
+            }            
+            else if (g_system_state.debug_level == 2) { // Level 2: 添加电流数据和INA236状态
                 snprintf(temp, sizeof(temp), 
-                        ", \"LastCurrent\": %d", 
-                        g_system_state.current_buffer[(g_system_state.buffer_index + BUFFER_SIZE - 1) % BUFFER_SIZE]);
+                        ", \"LASTDATA\": %d, \"INA236INIT\": %s, \"INA236READ\": %s",
+                        g_system_state.current_buffer[(g_system_state.buffer_index + BUFFER_SIZE - 1) % BUFFER_SIZE],
+                        g_system_state.ina236_init_stat ? "true" : "false",
+                        g_system_state.ina236_read_stat ? "true" : "false");
                 strcat(response, temp);
             }
-            
-            // Level 3: 添加详细状态
-            if (g_system_state.debug_level >= 3) {
+            else if (g_system_state.debug_level == 3) { // Level 3: 添加详细状态
                 snprintf(temp, sizeof(temp), 
-                        ", \"Motor\": \"%c\", \"TargetStep\": %d, \"CurrentStep\": %d, "
-                        "\"RoundCount\": %d, \"ZeroPoint\": %s",
-                        g_system_state.current_direction,
+                        ", \"MOVING\": %s, \"DIRECTION\": %s, \"TARGET\": %d, \"CURRENTSTEP\": %d, "
+                        "\"ROUND\": %d, \"ZeroPoint\": %s, \"SQSTATE\": %d",
+                        g_system_state.motor_moving ? "true" : "false",
+                        g_system_state.direction ? "true" : "false",
                         g_system_state.target_steps, g_system_state.current_steps,
                         g_system_state.round_count,
-                        g_system_state.zero_point ? "true" : "false");
+                        g_system_state.zero_point ? "true" : "false",
+                        SequenceController_GetState());
                 strcat(response, temp);
             }
             

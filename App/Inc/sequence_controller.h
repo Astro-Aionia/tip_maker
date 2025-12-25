@@ -19,5 +19,6 @@ void SequenceController_Init(void);
 void SequenceController_Start(void);
 void SequenceController_Process(void);
 bool SequenceController_IsRunning(void);
+SequenceState_t SequenceController_GetState(void);
 
 #endif /* __SEQUENCE_CONTROLLER_H__ */

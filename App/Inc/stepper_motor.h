@@ -6,9 +6,9 @@
 
 // 电机方向定义
 typedef enum {
-    MOTOR_DIR_STOP = 0,
-    MOTOR_DIR_CW = 1,
-    MOTOR_DIR_CCW = 2
+    // MOTOR_DIR_STOP = 0,
+    MOTOR_DIR_CW = true,
+    MOTOR_DIR_CCW = false
 } MotorDirection_t;
 
 // 脉冲计数回调函数类型

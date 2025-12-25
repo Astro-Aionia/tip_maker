@@ -38,7 +38,7 @@ typedef struct {
     bool motor_moving;
     uint16_t target_steps;
     uint16_t current_steps;
-    char current_direction;
+    bool direction;
 
     //INA236 通讯状态
     bool ina236_init_stat;

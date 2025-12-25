@@ -5,7 +5,7 @@
 
 // 内部状态
 static struct {
-    MotorDirection_t direction;
+    bool direction;
     uint16_t target_pulses;
     uint16_t current_pulses;
     bool is_moving;
@@ -18,7 +18,7 @@ static uint16_t tim1_arr_value = 999; // 默认1000Hz: (1MHz/1000) - 1
 static uint16_t tim1_psc_value = 71;  // 72MHz/72 = 1MHz
 
 void StepperMotor_Init(void) {
-    motor_state.direction = MOTOR_DIR_STOP;
+    motor_state.direction = true;
     motor_state.target_pulses = 0;
     motor_state.current_pulses = 0;
     motor_state.is_moving = false;
@@ -62,7 +62,7 @@ void StepperMotor_SetFrequency(uint16_t freq) {
 }
 
 void StepperMotor_Move(MotorDirection_t dir, uint16_t steps) {
-    if (steps == 0 || dir == MOTOR_DIR_STOP) {
+    if (steps == 0) {
         StepperMotor_Stop();
         return;
     }
@@ -112,7 +112,7 @@ void StepperMotor_Move(MotorDirection_t dir, uint16_t steps) {
     g_system_state.motor_moving = true;
     g_system_state.target_steps = steps;
     g_system_state.current_steps = 0;
-    g_system_state.current_direction = (dir == MOTOR_DIR_CW) ? '+' : '-';
+    g_system_state.direction = MOTOR_DIR_CW;
 }
 
 void StepperMotor_CountinueMove(MotorDirection_t dir){
@@ -148,7 +148,7 @@ void StepperMotor_CountinueMove(MotorDirection_t dir){
 
 void StepperMotor_Stop(void) {
     motor_state.is_moving = false;
-    motor_state.direction = MOTOR_DIR_STOP;
+    // motor_state.direction = MOTOR_DIR_STOP;
     motor_state.counting_enabled = false;
 
     // 停止PWM和定时器中断
@@ -165,7 +165,7 @@ void StepperMotor_Stop(void) {
     
     // 更新系统状态
     g_system_state.motor_moving = false;
-    g_system_state.current_direction = '0';
+    // g_system_state.direction = true;
     g_system_state.current_steps = 0;
     g_system_state.target_steps = 0;
 
@@ -240,21 +240,11 @@ void StepperMotor_EXTI3_Update_IRQHandler(void) {
         // 清除中断标志
         __HAL_GPIO_EXTI_CLEAR_IT(INPUT_ROUNDOUT_Pin);
         
-        /*/ 检查电机方向
-        switch (g_system_state.current_direction) {
-        case 'C': // 正转
-            SystemState_UpdateRoundCount(true); // 增加
-            break;
-            
-        case 'W': // 反转
-            SystemState_UpdateRoundCount(false); // 减少
-            break;
-            
-        case 'S': // 停止
-        default:
-            // 停止状态，忽略信号（可能是干扰）
-            break;
-        }*/
-       SystemState_UpdateRoundCount(true); // 简化处理，统一增加
+       // 检查电机方向
+       if (motor_state.direction == MOTOR_DIR_CW) {
+           SystemState_UpdateRoundCount(true); // 正转增加
+       } else if (motor_state.direction == MOTOR_DIR_CCW) {
+           SystemState_UpdateRoundCount(false); // 反转减少
+       }
     }
 }

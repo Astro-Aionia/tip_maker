@@ -59,7 +59,7 @@ void SystemState_Init(void) {
     g_system_state.motor_moving = false;
     g_system_state.target_steps = 0;
     g_system_state.current_steps = 0;
-    g_system_state.current_direction = '0'; // 0表示停止
+    g_system_state.direction = true; // 初始化为正向
 
     // 初始化INA236通讯状态
     g_system_state.ina236_init_stat = false;

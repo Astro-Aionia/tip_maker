@@ -73,13 +73,13 @@ void SystemState_UpdateCurrent(uint16_t current) {
 }
 
 void SystemState_ResetRoundCount(void) {
-     // 临界区保护
-    uint32_t primask = __get_PRIMASK();
-    __disable_irq();
+    // 临界区保护
+    // uint32_t primask = __get_PRIMASK();
+    // __disable_irq();
     
     g_system_state.round_count = 0;
     
-    __set_PRIMASK(primask);
+    // __set_PRIMASK(primask);
 }
 
 // 安全获取round_count
@@ -100,8 +100,8 @@ uint16_t SystemState_GetRoundCount(void) {
 // 处理round_count变化
 void SystemState_UpdateRoundCount(bool increment) {
     // 临界区保护，防止中断打断
-    uint32_t primask = __get_PRIMASK();
-    __disable_irq();
+    // uint32_t primask = __get_PRIMASK();
+    // __disable_irq();
     
     // 根据方向增加或减少round_count
     if (increment) {
@@ -143,12 +143,21 @@ void SystemState_LoadFromEEPROM(void) {
     if (EE_ReadVariable(0x0001, &freq_value) == 0) {
         g_system_state.freq = (uint16_t)freq_value;
     }
+    else {
+        g_system_state.freq = 25; // 默认值
+    }
     
     if (EE_ReadVariable(0x0002, &threshold_value) == 0) {
         g_system_state.threshold = (uint16_t)&threshold_value;
     }
+    else {
+        g_system_state.threshold = 50; // 默认值
+    }
 
     if (EE_ReadVariable(0x0003, &debug_level_value) == 0) {
         g_system_state.debug_level = (uint8_t)debug_level_value;
+    }
+    else {
+        g_system_state.debug_level = 0; // 默认值
     }
 }

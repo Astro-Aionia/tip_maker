@@ -240,7 +240,7 @@ void StepperMotor_EXTI3_Update_IRQHandler(void) {
         // 清除中断标志
         __HAL_GPIO_EXTI_CLEAR_IT(INPUT_ROUNDOUT_Pin);
         
-        // 检查电机方向
+        /*/ 检查电机方向
         switch (g_system_state.current_direction) {
         case 'C': // 正转
             SystemState_UpdateRoundCount(true); // 增加
@@ -254,6 +254,7 @@ void StepperMotor_EXTI3_Update_IRQHandler(void) {
         default:
             // 停止状态，忽略信号（可能是干扰）
             break;
-        }
+        }*/
+       SystemState_UpdateRoundCount(true); // 简化处理，统一增加
     }
 }

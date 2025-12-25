@@ -281,7 +281,7 @@ void CommandParser_Process(const char *cmd) {
                         "\"RoundCount\": %d, \"ZeroPoint\": %s",
                         g_system_state.current_direction,
                         g_system_state.target_steps, g_system_state.current_steps,
-                        SystemState_GetRoundCount(),
+                        g_system_state.round_count,
                         g_system_state.zero_point ? "true" : "false");
                 strcat(response, temp);
             }

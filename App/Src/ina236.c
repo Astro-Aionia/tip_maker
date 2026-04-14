@@ -5,7 +5,7 @@
 
 // INA236电流校准参数
 #define CURRENT_LSB_NANO 250 //最大电流为8192uA
-#define SHUNT_CAL 621 //测试电阻为33Ω 
+#define SHUNT_CAL 2048 //分流电阻为10Ω 
 
 bool INA236_Init(void) {
     g_system_state.ina236_init_stat = false;

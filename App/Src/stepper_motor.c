@@ -88,19 +88,19 @@ void StepperMotor_Move(MotorDirection_t dir, uint16_t steps) {
     // 启动相应方向的PWM
     if (dir == MOTOR_DIR_CW) {
         // 停止另一个方向
-        HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);
+        HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
         HAL_GPIO_WritePin(PWM_CCW_GPIO_Port, PWM_CCW_Pin, GPIO_PIN_RESET);
         
         // 启动CW方向PWM和定时器中断
-        HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+        HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
         HAL_TIM_Base_Start_IT(&htim1);
     } else if (dir == MOTOR_DIR_CCW) {
         // 停止另一个方向
-        HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
+        HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);
         HAL_GPIO_WritePin(PWM_CW_GPIO_Port, PWM_CW_Pin, GPIO_PIN_RESET);
         
         // 启动CCW方向PWM和定时器中断
-        HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+        HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
         HAL_TIM_Base_Start_IT(&htim1);
     } else {
         // 无效方向，停止电机
@@ -234,7 +234,7 @@ void StepperMotor_TIM1_Update_IRQHandler(void) {
 }
 
 // 外部中断处理函数（用于原点励磁计数）
-void StepperMotor_EXTI3_Update_IRQHandler(void) {
+void StepperMotor_EXTI15_10_Update_IRQHandler(void) {
      // 检查是否是PA3触发的中断
     if (__HAL_GPIO_EXTI_GET_IT(INPUT_ROUNDOUT_Pin) != RESET) {
         // 清除中断标志

@@ -31,6 +31,6 @@ void StepperMotor_ResetPulseCount(void);
 void StepperMotor_TIM1_Update_IRQHandler(void);
 
 // 原点励磁（中断）计数函数
-void StepperMotor_EXTI3_Update_IRQHandler(void);
+void StepperMotor_EXTI15_10_Update_IRQHandler(void);
 
 #endif /* __STEPPER_MOTOR_H__ */

@@ -3,6 +3,7 @@
 
 # 常见构建输出
 /build/
+/build.old/
 bin/
 out/
 Debug/

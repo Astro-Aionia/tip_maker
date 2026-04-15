@@ -4,6 +4,7 @@
 #include "usbd_cdc_if.h"
 #include <string.h>
 #include <stdio.h>
+#include "stepper_motor.h"
 
 SystemState_t g_system_state;
 

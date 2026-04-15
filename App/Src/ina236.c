@@ -50,7 +50,7 @@ bool INA236_ReadCurrent(uint16_t *current) {
     
     // 写入要读取的寄存器地址
     if (HAL_I2C_Master_Transmit(&hi2c1, INA236_ADDRESS, 
-                               &reg_addr, 1, 100) != HAL_OK) {
+                               reg_addr, 1, 100) != HAL_OK) {
         g_system_state.ina236_read_stat = true;
         return false;
     }

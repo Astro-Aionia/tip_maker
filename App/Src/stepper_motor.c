@@ -125,19 +125,19 @@ void StepperMotor_CountinueMove(MotorDirection_t dir){
 
     if (motor_state.direction == MOTOR_DIR_CW) {
         // 停止另一个方向
-        HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);
+        HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
         HAL_GPIO_WritePin(PWM_CCW_GPIO_Port, PWM_CCW_Pin, GPIO_PIN_RESET);
         
         // 启动CW方向PWM并关闭定时器中断
-        HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+        HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
         HAL_TIM_Base_Stop_IT(&htim1);
     } else if (motor_state.direction == MOTOR_DIR_CCW) {
         // 停止另一个方向
-        HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
+        HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);
         HAL_GPIO_WritePin(PWM_CW_GPIO_Port, PWM_CW_Pin, GPIO_PIN_RESET);
         
         // 启动CCW方向PWM并关闭定时器中断
-        HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+        HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
         HAL_TIM_Base_Stop_IT(&htim1);
     } else {
         // 无效方向，停止电机
